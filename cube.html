@@ -11,27 +11,14 @@
   <body>
     <div id="container"></div>
     <script src="http://www.html5canvastutorials.com/libraries/three.min.js"></script>
+    <script src="http://tobig.github.io/3d-models/js/OrbitControls.js"></script> 
     <script defer="defer">
-      // revolutions per second
-      var angularSpeed = 0.2; 
-      var lastTime = 0;
- 
       // this function is executed on each animation frame
       function animate(){
-        // update
-        var time = (new Date()).getTime();
-        var timeDiff = time - lastTime;
-        var angleChange = angularSpeed * timeDiff * 2 * Math.PI / 1000;
-        cube.rotation.y += angleChange;
-        lastTime = time;
- 
-        // render
+        requestAnimationFrame(animate);
         renderer.render(scene, camera);
+        controls.update();
  
-        // request new frame
-        requestAnimationFrame(function(){
-            animate();
-        });
       }
 
       // renderer
@@ -53,10 +40,20 @@
       cube.overdraw = true;
       cube.rotation.x = Math.PI * 0.1;
       scene.add(cube);
+
+      // Load in the mesh and add it to the scene.
+      var loader = new THREE.JSONLoader();
+      loader.load( "models/3d.hexagonal-2-parallel-2-stretched-dim.js", function(geometry){
+        var material = new THREE.MeshLambertMaterial({color: 0x55B663});
+        mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+      });
       
       var directionalLight = new THREE.DirectionalLight(0xffffff);
       directionalLight.position.set(1, 1, 1).normalize();
       scene.add(directionalLight);
+      // Add OrbitControls so that we can pan around with the mouse.
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
  
       // start animation
       animate();
